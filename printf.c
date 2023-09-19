@@ -41,7 +41,20 @@ int _printf(const char *format, ...)
 				cont++;
 			} else
 			{
-				return (-1);
+				if (format[i] == '\0')
+					return (-1);
+				else
+				{	
+					_putchar(format[i-1]);
+					_putchar(format[i++]);
+					cont += 2;
+					while (format[i] != '\0' && format[i] != '%')
+					{
+						_putchar(format[i++]);
+						cont++;
+					}
+					i--;
+				}
 			}
 		}
 		i++;
