@@ -1,6 +1,6 @@
-#include "main.h"
 #include <stdarg.h>
-#include <stdio.h>
+#include <unistd.h>
+#include "main.h"
 /**
  * _printf - produces output according to a format.
  * @format: is a character string
@@ -8,43 +8,44 @@
  */
 int _printf(const char *format, ...)
 {
-	int i = 0, cont = 0;
-	char *str, c;
 	va_list args;
-
-	if (format == NULL)
-		return (-1);
+	int count = 0;
+	char *str, c;
 
 	va_start(args, format);
-	while (format[i] != '\0')
+	if (format == NULL)
+		return (-1);
+	while (*format != '\0')
 	{
-		if (format[i] != '%')
+		if (*format == '%')
 		{
-			_putchar(format[i]);
-			cont++;
-		}
-		else
-		{
-			i++;
-			if (format[i] == 'c')
-			{
-				c = va_arg(args, int);
-				_putchar(c);
-				cont++;
-			} else if (format[i] == 's')
+			format++;
+			if (*format == 's')
 			{
 				str = va_arg(args, char *);
-				_puts(str);
-				cont += _strlen(str);
-			} else if (format[i] == '%')
+				while (*str != '\0')
+				{
+					write(1, str, 1);
+					str++;
+					count++;
+				}
+			} else if (*format == 'c')
 			{
-				_putchar('%');
-				cont++;
+				c = va_arg(args, int);
+				write(1, &c, 1);
+				count++;
+			} else if (*format == '%')
+			{
+				write(1, "%", 1);
+				count++;
 			}
+		} else
+		{
+			write(1, format, 1);
+			count++;
 		}
-		i++;
+		format++;
 	}
-
 	va_end(args);
-	return (cont);
+	return (count);
 }
