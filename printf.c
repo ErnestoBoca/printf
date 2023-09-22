@@ -1,6 +1,27 @@
 #include "main.h"
 #include <stdarg.h>
 #include <stdio.h>
+
+/**
+ * printer - prints the character
+ * @args: the argument list
+ * @chr: the hndler
+ * Return: the number of characters printed
+ */
+int printer(va_list args, char chr)
+{
+	char c;
+
+	if (chr == 'c')
+	{
+		c = va_arg(args, int);
+		_putchar(c);
+		return (1);
+	}
+
+	return (0);
+}
+
 /**
  * _printf - produces output according to a format.
  * @format: is a character string
@@ -8,57 +29,44 @@
  */
 int _printf(const char *format, ...)
 {
-	int i, printed = 0, printed_chars = 0;
-	int flags, width, precision, size, buff_ind = 0;
-	va_list list;
-	char buffer[BUFF_SIZE];
+	int i = 0, cont = 0;
+	char *str;
+	va_list args;
 
 	if (format == NULL)
 		return (-1);
-
-	va_start(list, format);
-
-	for (i = 0; format && format[i] != '\0'; i++)
+	va_start(args, format);
+	while (format[i] != '\0')
 	{
 		if (format[i] != '%')
 		{
-			buffer[buff_ind++] = format[i];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer(buffer, &buff_ind);
-			printed_chars++;
+			_putchar(format[i]);
+			cont++;
 		}
 		else
 		{
-			print_buffer(buffer, &buff_ind);
-			flags = get_flags(format, &i);
-			width = get_width(format, &i, list);
-			precision = get_precision(format, &i, list);
-			size = get_size(format, &i);
-			++i;
-			printed = handle_print(format, &i, list, buffer,
-				flags, width, precision, size);
-			if (printed == -1)
-				return (-1);
-			printed_chars += printed;
+			i++;
+			if (format[i] == 'c')
+				cont += printer(args, format[i]);
+			else if (format[i] == 's')
+			{
+				str = va_arg(args, char *);
+				_puts(str);
+				cont += _strlen(str);
+			} else if (format[i] == '%')
+			{
+				_putchar('%');
+				cont++;
+			} else
+			{
+				_putchar(format[i - 1]);
+				while (format[i] != '\0' && format[i] != '%')
+					_putchar(format[i++]);
+				i--;
+			}
 		}
+		i++;
 	}
-
-	print_buffer(buffer, &buff_ind);
-
-	va_end(list);
-
-	return (printed_chars);
+	va_end(args);
+	return (cont);
 }
-/**
- * print_buffer - Prints the buffer
- * @buffer: Array of chars to be displayed
- * @buff_ind: Index of the buffer
- */
-void print_buffer(char buffer[], int *buff_ind)
-{
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
-
-	*buff_ind = 0;
-}
-
