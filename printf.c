@@ -60,8 +60,12 @@ int _printf(const char *format, ...)
 			} else
 			{
 				_putchar(format[i - 1]);
+				_putchar(format[i++]);
 				while (format[i] != '\0' && format[i] != '%')
+				{
 					_putchar(format[i++]);
+					cont++;
+				}
 				i--;
 			}
 		}
