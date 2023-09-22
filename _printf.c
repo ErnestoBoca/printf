@@ -1,27 +1,6 @@
 #include "main.h"
 #include <stdarg.h>
 #include <stdio.h>
-
-/**
- * printer - prints the character
- * @args: the argument list
- * @chr: the hndler
- * Return: the number of characters printed
- */
-int printer(va_list args, char chr)
-{
-	char c;
-
-	if (chr == 'c')
-	{
-		c = va_arg(args, int);
-		_putchar(c);
-		return (1);
-	}
-
-	return (0);
-}
-
 /**
  * _printf - produces output according to a format.
  * @format: is a character string
@@ -30,9 +9,8 @@ int printer(va_list args, char chr)
 int _printf(const char *format, ...)
 {
 	int i = 0, cont = 0;
-	char *str;
+	char *str, c;
 	va_list args;
-
 	if (format == NULL)
 		return (-1);
 	va_start(args, format);
@@ -47,8 +25,11 @@ int _printf(const char *format, ...)
 		{
 			i++;
 			if (format[i] == 'c')
-				cont += printer(args, format[i]);
-			else if (format[i] == 's')
+			{
+				c = va_arg(args, int);
+				_putchar(c);
+				cont++;
+			} else if (format[i] == 's')
 			{
 				str = va_arg(args, char *);
 				_puts(str);
@@ -59,14 +40,21 @@ int _printf(const char *format, ...)
 				cont++;
 			} else
 			{
-				_putchar(format[i - 1]);
-				_putchar(format[i++]);
-				while (format[i] != '\0' && format[i] != '%')
-				{
+				return (-1);
+				if (format[i] == '\0')
+					return (-1);
+				else
+				{	
+					_putchar(format[i-1]);
 					_putchar(format[i++]);
-					cont++;
+					cont += 2;
+					while (format[i] != '\0' && format[i] != '%')
+					{
+						_putchar(format[i++]);
+						cont++;
+					}
+					i--;
 				}
-				i--;
 			}
 		}
 		i++;
